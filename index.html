@@ -22,22 +22,25 @@
             background-color: #0056b3;
         }
 
-        /* This styles the hidden content area once it opens */
+        /* CHANGED: Turns the gallery container into a side-by-side flex layout */
         .image-gallery {
             margin-top: 15px;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #f9f9f9;
+            display: flex;
+            flex-wrap: wrap; /* Allows images to drop to the next line when out of room */
+            gap: 15px;       /* Adds a clean space between the images */
+            justify-content: center; /* Centers the row of images */
         }
 
-        /* CHANGED: This limits the size of the hidden gallery images */
+        /* CHANGED: Fixed size so they sit nicely next to each other */
         .gallery-img {
-            max-width: 300px; /* Adjust this number to make them bigger or smaller */
-            width: 100%;
-            height: auto;
-            margin-bottom: 15px;
-            display: block;
+            width: 200px;    /* Change this to make them bigger or smaller */
+            height: 200px;   /* Makes them perfectly square */
+            object-fit: cover; /* Crops them cleanly into squares without stretching */
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -45,7 +48,7 @@
     <h1>Hello, World!</h1>
     <p>have you seen this man.</p>
     
-    <!-- Image 1: Your main visible image (stays large) -->
+    <!-- Image 1: Your main visible image -->
     <img src="avatar.png" alt="Wanted poster description" style="max-width: 100%; height: auto;">
 
     <!-- The expandable button section for the remaining images -->
