@@ -57,7 +57,7 @@
             transform: scale(1.05); 
         }
 
-        /* --- WEBSITE PASSWORD POPUP OVERLAY --- */
+        /* --- WEBSITE PASSWORD POPUP OVERLAY BOX --- */
         .pwd-modal {
             display: none; /* Hidden by default */
             position: fixed;
@@ -66,7 +66,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* Dark transparent tint */
+            background-color: rgba(0, 0, 0, 0.7); /* Dark transparent tint over page */
         }
 
         .pwd-modal-content {
@@ -215,7 +215,7 @@
         </div>
     </div>
 
-    <!-- NEW: Directly built password display frame -->
+    <!-- THIS IS THE POPUP PASSWORD BOX -->
     <div id="pwdModal" class="pwd-modal">
         <div class="pwd-modal-content">
             <span class="close-pwd" onclick="closePasswordModal()">&times;</span>
@@ -242,17 +242,15 @@
         const errorMsg = document.getElementById('errorMsg');
         const gallery = document.getElementById('secureGallery');
 
-        // CUSTOM PASSWORD MODAL LOGIC
+        // CUSTOM PASSWORD LOGIC
         function openPasswordModal() {
-            // If it's already open, clicking the main button hides it
             if (gallery.style.display === "flex") {
                 gallery.style.display = "none";
                 return;
             }
-            // Otherwise open password display box
             pwdModal.style.display = "block";
-            passwordField.value = ""; // Clear old entry
-            errorMsg.style.display = "none"; // Clear old errors
+            passwordField.value = ""; 
+            errorMsg.style.display = "none"; 
             passwordField.focus();
         }
 
@@ -262,14 +260,13 @@
 
         function verifyPassword() {
             if (passwordField.value === "JAGM") {
-                gallery.style.display = "flex"; // Unlocks the gallery layout
+                gallery.style.display = "flex"; 
                 closePasswordModal();
             } else {
-                errorMsg.style.display = "block"; // Shows wrong password error text directly in the box
+                errorMsg.style.display = "block"; 
             }
         }
 
-        // Allow hitting the "Enter" key inside input to submit password
         passwordField.addEventListener("keyup", function(event) {
             if (event.key === "Enter") {
                 verifyPassword();
@@ -320,3 +317,9 @@
                 if (e.key === "ArrowLeft") changeSlide(-1);
                 if (e.key === "ArrowRight") changeSlide(1);
                 if (e.key === "Escape") closeLightbox();
+            }
+        });
+    </script>
+
+</body>
+</html>
