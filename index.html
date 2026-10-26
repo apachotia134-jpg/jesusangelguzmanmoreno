@@ -8,7 +8,7 @@
             margin: 20px;
         }
 
-        /* This styles the button layout */
+        /* This styles the main button layout */
         .secure-btn {
             background-color: #007bff;
             color: white;
@@ -55,6 +55,79 @@
 
         .gallery-img:hover {
             transform: scale(1.05); 
+        }
+
+        /* --- WEBSITE PASSWORD POPUP OVERLAY --- */
+        .pwd-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark transparent tint */
+        }
+
+        .pwd-modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 25px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .pwd-modal-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .pwd-input {
+            width: 80%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .pwd-submit-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .pwd-submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .close-pwd {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close-pwd:hover {
+            color: #333;
+        }
+
+        .error-msg {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
         }
 
         /* --- LIGHTBOX SLIDESHOW STYLING --- */
@@ -126,11 +199,10 @@
     <!-- Image 1: Your main visible image -->
     <img src="avatar.png" alt="Wanted poster description" style="max-width: 100%; height: auto;">
 
-    <!-- FIXED: Replaced standard <details> with a controlled button layout -->
     <div>
-        <button class="secure-btn" onclick="checkPassword()">Click to see more images</button>
+        <button class="secure-btn" onclick="openPasswordModal()">Click to see more images</button>
         
-        <!-- The gallery is completely hidden by default until unlocked -->
+        <!-- The gallery hidden until unlocked -->
         <div id="secureGallery" class="image-gallery" style="display: none;">
             <img class="gallery-img" src="IMG_0134.PNG" alt="first view" data-index="0">
             <img class="gallery-img" src="IMG_0157.PNG" alt="Second view" data-index="1">
@@ -143,6 +215,19 @@
         </div>
     </div>
 
+    <!-- NEW: Directly built password display frame -->
+    <div id="pwdModal" class="pwd-modal">
+        <div class="pwd-modal-content">
+            <span class="close-pwd" onclick="closePasswordModal()">&times;</span>
+            <h3>Enter Password</h3>
+            <p style="color: #666; font-size: 14px; margin: 0;">This section is restricted.</p>
+            <input type="password" id="passwordField" class="pwd-input" placeholder="Password">
+            <br>
+            <button class="pwd-submit-btn" onclick="verifyPassword()">Submit</button>
+            <div id="errorMsg" class="error-msg">Incorrect password. Try again!</div>
+        </div>
+    </div>
+
     <!-- The Pop-up Lightbox Structure -->
     <div id="myLightbox" class="lightbox">
         <span class="close" onclick="closeLightbox()">&times;</span>
@@ -152,25 +237,44 @@
     </div>
 
     <script>
-        // PASSWORD PROTECTION LOGIC
-        function checkPassword() {
-            const gallery = document.getElementById('secureGallery');
-            
-            // If it's already open, click closes it
+        const pwdModal = document.getElementById('pwdModal');
+        const passwordField = document.getElementById('passwordField');
+        const errorMsg = document.getElementById('errorMsg');
+        const gallery = document.getElementById('secureGallery');
+
+        // CUSTOM PASSWORD MODAL LOGIC
+        function openPasswordModal() {
+            // If it's already open, clicking the main button hides it
             if (gallery.style.display === "flex") {
                 gallery.style.display = "none";
                 return;
             }
+            // Otherwise open password display box
+            pwdModal.style.display = "block";
+            passwordField.value = ""; // Clear old entry
+            errorMsg.style.display = "none"; // Clear old errors
+            passwordField.focus();
+        }
 
-            // Prompt user for the password
-            let passwordAttempt = prompt("Please enter the password to view the remaining images:");
-            
-            if (passwordAttempt === "JAGM") {
-                gallery.style.display = "flex"; // Unlocks the gallery
-            } else if (passwordAttempt !== null) {
-                alert("Incorrect password! Access denied."); // Wrong password warning
+        function closePasswordModal() {
+            pwdModal.style.display = "none";
+        }
+
+        function verifyPassword() {
+            if (passwordField.value === "JAGM") {
+                gallery.style.display = "flex"; // Unlocks the gallery layout
+                closePasswordModal();
+            } else {
+                errorMsg.style.display = "block"; // Shows wrong password error text directly in the box
             }
         }
+
+        // Allow hitting the "Enter" key inside input to submit password
+        passwordField.addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                verifyPassword();
+            }
+        });
 
         // LIGHTBOX SLIDESHOW LOGIC
         let currentIdx = 0;
@@ -216,9 +320,3 @@
                 if (e.key === "ArrowLeft") changeSlide(-1);
                 if (e.key === "ArrowRight") changeSlide(1);
                 if (e.key === "Escape") closeLightbox();
-            }
-        });
-    </script>
-
-</body>
-</html>
