@@ -3,14 +3,13 @@
 <head>
     <title>My Website</title>
     <style>
-        /* Main page styling */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
 
-        /* This makes the button look neat and clickable */
-        summary {
+        /* This styles the button layout */
+        .secure-btn {
             background-color: #007bff;
             color: white;
             padding: 12px 20px;
@@ -24,7 +23,7 @@
             user-select: none;
         }
 
-        summary:hover {
+        .secure-btn:hover {
             background-color: #0056b3;
         }
 
@@ -50,17 +49,17 @@
             object-fit: contain; 
             border-radius: 4px;
             border: 1px solid #eee;
-            cursor: pointer; /* Changes mouse cursor to a magnifying glass/hand pointer */
+            cursor: pointer; 
             transition: transform 0.2s;
         }
 
         .gallery-img:hover {
-            transform: scale(1.05); /* Slight zoom effect on hover */
+            transform: scale(1.05); 
         }
 
         /* --- LIGHTBOX SLIDESHOW STYLING --- */
         .lightbox {
-            display: none; /* Hidden by default */
+            display: none; 
             position: fixed;
             z-index: 999;
             padding-top: 50px;
@@ -69,10 +68,9 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9); /* Dark black background */
+            background-color: rgba(0, 0, 0, 0.9); 
         }
 
-        /* The full-screen image container */
         .lightbox-content {
             margin: auto;
             display: block;
@@ -81,7 +79,6 @@
             object-fit: contain;
         }
 
-        /* Close Button */
         .close {
             position: absolute;
             top: 15px;
@@ -92,7 +89,6 @@
             cursor: pointer;
         }
 
-        /* Navigation Arrows */
         .prev, .next {
             cursor: pointer;
             position: absolute;
@@ -130,11 +126,12 @@
     <!-- Image 1: Your main visible image -->
     <img src="avatar.png" alt="Wanted poster description" style="max-width: 100%; height: auto;">
 
-    <!-- The expandable button section for the remaining images -->
-    <details>
-        <summary>Click to see more images</summary>
-        <div class="image-gallery">
-            <!-- Added data-index to track position in the slideshow -->
+    <!-- FIXED: Replaced standard <details> with a controlled button layout -->
+    <div>
+        <button class="secure-btn" onclick="checkPassword()">Click to see more images</button>
+        
+        <!-- The gallery is completely hidden by default until unlocked -->
+        <div id="secureGallery" class="image-gallery" style="display: none;">
             <img class="gallery-img" src="IMG_0134.PNG" alt="first view" data-index="0">
             <img class="gallery-img" src="IMG_0157.PNG" alt="Second view" data-index="1">
             <img class="gallery-img" src="IMG_0182.PNG" alt="Third view" data-index="2">
@@ -144,7 +141,7 @@
             <img class="gallery-img" src="IMG_0217.PNG" alt="Seventh view" data-index="6">
             <img class="gallery-img" src="IMG_0218.PNG" alt="Eighth view" data-index="7">
         </div>
-    </details>
+    </div>
 
     <!-- The Pop-up Lightbox Structure -->
     <div id="myLightbox" class="lightbox">
@@ -154,14 +151,33 @@
         <a class="next" onclick="changeSlide(1)">&#10095;</a>
     </div>
 
-    <!-- The Slideshow Script logic -->
     <script>
+        // PASSWORD PROTECTION LOGIC
+        function checkPassword() {
+            const gallery = document.getElementById('secureGallery');
+            
+            // If it's already open, click closes it
+            if (gallery.style.display === "flex") {
+                gallery.style.display = "none";
+                return;
+            }
+
+            // Prompt user for the password
+            let passwordAttempt = prompt("Please enter the password to view the remaining images:");
+            
+            if (passwordAttempt === "JAGM") {
+                gallery.style.display = "flex"; // Unlocks the gallery
+            } else if (passwordAttempt !== null) {
+                alert("Incorrect password! Access denied."); // Wrong password warning
+            }
+        }
+
+        // LIGHTBOX SLIDESHOW LOGIC
         let currentIdx = 0;
         const images = document.querySelectorAll('.gallery-img');
         const lightbox = document.getElementById('myLightbox');
         const lightboxImg = document.getElementById('lightboxImg');
 
-        // Loop through gallery items to attach click listeners
         images.forEach((img) => {
             img.addEventListener('click', function() {
                 openLightbox(parseInt(this.getAttribute('data-index')));
@@ -180,7 +196,6 @@
 
         function changeSlide(direction) {
             currentIdx += direction;
-            // Loop back to start/end if boundaries crossed
             if (currentIdx >= images.length) currentIdx = 0;
             if (currentIdx < 0) currentIdx = images.length - 1;
             updateLightboxImage();
@@ -190,14 +205,12 @@
             lightboxImg.src = images[currentIdx].src;
         }
 
-        // Close when clicking outside the image frame
         lightbox.addEventListener('click', function(e) {
             if (e.target === lightbox) {
                 closeLightbox();
             }
         });
 
-        // Add keyboard arrow support for scrolling through photos
         document.addEventListener('keydown', function(e) {
             if (lightbox.style.display === "block") {
                 if (e.key === "ArrowLeft") changeSlide(-1);
