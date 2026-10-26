@@ -3,6 +3,12 @@
 <head>
     <title>My Website</title>
     <style>
+        /* Main page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
         /* This makes the button look neat and clickable */
         summary {
             background-color: #007bff;
@@ -30,24 +36,94 @@
             border-radius: 5px;
             background-color: #f9f9f9;
             display: flex;
-            flex-wrap: wrap; /* Allows images to drop to the next line when out of room */
-            gap: 15px;       /* Adds a clean space between the images */
-            justify-content: center; /* Centers the row of images */
+            flex-wrap: wrap; 
+            gap: 15px;       
+            justify-content: center; 
         }
 
-        /* FIX: This keeps the images small but prevents them from being cropped */
+        /* Fixed size so they sit nicely next to each other */
         .gallery-img {
-            max-width: 200px;   /* Limits the maximum width */
-            max-height: 200px;  /* Limits the maximum height */
-            width: auto;        /* Lets the width adjust naturally */
-            height: auto;       /* Lets the height adjust naturally */
-            object-fit: contain; /* Scales the image down without cropping anything */
+            max-width: 200px;   
+            max-height: 200px;  
+            width: auto;        
+            height: auto;       
+            object-fit: contain; 
             border-radius: 4px;
-            border: 1px solid #eee; /* Optional: adds a thin border around each image frame */
+            border: 1px solid #eee;
+            cursor: pointer; /* Changes mouse cursor to a magnifying glass/hand pointer */
+            transition: transform 0.2s;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.05); /* Slight zoom effect on hover */
+        }
+
+        /* --- LIGHTBOX SLIDESHOW STYLING --- */
+        .lightbox {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 999;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9); /* Dark black background */
+        }
+
+        /* The full-screen image container */
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 85%;
+            max-height: 75vh;
+            object-fit: contain;
+        }
+
+        /* Close Button */
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Navigation Arrows */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -50px;
+            color: white;
+            font-weight: bold;
+            font-size: 40px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev {
+            left: 0;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
         }
     </style>
 </head>
 <body>
+
     <h1>Hello, World!</h1>
     <p>have you seen this man.</p>
     
@@ -58,18 +134,78 @@
     <details>
         <summary>Click to see more images</summary>
         <div class="image-gallery">
-            
-            <img class="gallery-img" src="IMG_0134.PNG" alt="first view">
-            <img class="gallery-img" src="IMG_0157.PNG" alt="Second view">
-            <img class="gallery-img" src="IMG_0182.PNG" alt="Third view">
-            <img class="gallery-img" src="IMG_0185.PNG" alt="Fourth view">
-            <img class="gallery-img" src="IMG_0206.PNG" alt="Fifth view">
-            <img class="gallery-img" src="IMG_0215.PNG" alt="Sixth view">
-            <img class="gallery-img" src="IMG_0217.PNG" alt="Seventh view">
-            <img class="gallery-img" src="IMG_0218.PNG" alt="Eighth view">
-            
+            <!-- Added data-index to track position in the slideshow -->
+            <img class="gallery-img" src="IMG_0134.PNG" alt="first view" data-index="0">
+            <img class="gallery-img" src="IMG_0157.PNG" alt="Second view" data-index="1">
+            <img class="gallery-img" src="IMG_0182.PNG" alt="Third view" data-index="2">
+            <img class="gallery-img" src="IMG_0185.PNG" alt="Fourth view" data-index="3">
+            <img class="gallery-img" src="IMG_0206.PNG" alt="Fifth view" data-index="4">
+            <img class="gallery-img" src="IMG_0215.PNG" alt="Sixth view" data-index="5">
+            <img class="gallery-img" src="IMG_0217.PNG" alt="Seventh view" data-index="6">
+            <img class="gallery-img" src="IMG_0218.PNG" alt="Eighth view" data-index="7">
         </div>
     </details>
+
+    <!-- The Pop-up Lightbox Structure -->
+    <div id="myLightbox" class="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <img class="lightbox-content" id="lightboxImg">
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    </div>
+
+    <!-- The Slideshow Script logic -->
+    <script>
+        let currentIdx = 0;
+        const images = document.querySelectorAll('.gallery-img');
+        const lightbox = document.getElementById('myLightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+
+        // Loop through gallery items to attach click listeners
+        images.forEach((img) => {
+            img.addEventListener('click', function() {
+                openLightbox(parseInt(this.getAttribute('data-index')));
+            });
+        });
+
+        function openLightbox(index) {
+            currentIdx = index;
+            lightbox.style.display = "block";
+            updateLightboxImage();
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = "none";
+        }
+
+        function changeSlide(direction) {
+            currentIdx += direction;
+            // Loop back to start/end if boundaries crossed
+            if (currentIdx >= images.length) currentIdx = 0;
+            if (currentIdx < 0) currentIdx = images.length - 1;
+            updateLightboxImage();
+        }
+
+        function updateLightboxImage() {
+            lightboxImg.src = images[currentIdx].src;
+        }
+
+        // Close when clicking outside the image frame
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // Add keyboard arrow support for scrolling through photos
+        document.addEventListener('keydown', function(e) {
+            if (lightbox.style.display === "block") {
+                if (e.key === "ArrowLeft") changeSlide(-1);
+                if (e.key === "ArrowRight") changeSlide(1);
+                if (e.key === "Escape") closeLightbox();
+            }
+        });
+    </script>
 
 </body>
 </html>
