@@ -2,12 +2,59 @@
 <html>
 <head>
     <title>My Website</title>
+    <style>
+        /* This makes the button look neat and clickable */
+        summary {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 20px;
+            user-select: none;
+        }
+
+        summary:hover {
+            background-color: #0056b3;
+        }
+
+        /* This styles the hidden content area once it opens */
+        .image-gallery {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .gallery-img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <h1>Hello, World!</h1>
     <p>have you seen this man.</p>
     
-    <!-- This displays your new PNG image -->
+    <!-- Your main image -->
     <img src="avatar.png" alt="Wanted poster description" style="max-width: 100%; height: auto;">
+
+    <!-- The expandable button section -->
+    <details>
+        <summary>Click to see more images</summary>
+        <div class="image-gallery">
+            <!-- Put your extra images inside here -->
+            <img class="gallery-img" src="avatar.png" alt="Second view of the man">
+            <!-- You can add more image tags here as you upload them -->
+        </div>
+    </details>
+
 </body>
 </html>
