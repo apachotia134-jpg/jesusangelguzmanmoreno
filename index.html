@@ -22,7 +22,7 @@
             background-color: #0056b3;
         }
 
-        /* CHANGED: Turns the gallery container into a side-by-side flex layout */
+        /* Turns the gallery container into a side-by-side flex layout */
         .image-gallery {
             margin-top: 15px;
             padding: 15px;
@@ -35,12 +35,15 @@
             justify-content: center; /* Centers the row of images */
         }
 
-        /* CHANGED: Fixed size so they sit nicely next to each other */
+        /* FIX: This keeps the images small but prevents them from being cropped */
         .gallery-img {
-            width: 200px;    /* Change this to make them bigger or smaller */
-            height: 200px;   /* Makes them perfectly square */
-            object-fit: cover; /* Crops them cleanly into squares without stretching */
+            max-width: 200px;   /* Limits the maximum width */
+            max-height: 200px;  /* Limits the maximum height */
+            width: auto;        /* Lets the width adjust naturally */
+            height: auto;       /* Lets the height adjust naturally */
+            object-fit: contain; /* Scales the image down without cropping anything */
             border-radius: 4px;
+            border: 1px solid #eee; /* Optional: adds a thin border around each image frame */
         }
     </style>
 </head>
