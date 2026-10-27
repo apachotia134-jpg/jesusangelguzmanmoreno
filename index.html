@@ -1,504 +1,304 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JAGM Gallery</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons for GitHub & UI icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Marked.js for Markdown parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* Transitions for interactive gallery thumbnails */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        /* This styles the main button layout */
+        .secure-btn {
+            background-color: #a0dce4;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 20px;
+            user-select: none;
+        }
+
+        .secure-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Turns the gallery container into a side-by-side flex layout */
+        .image-gallery {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 15px;       
+            justify-content: center; 
+        }
+
+        /* Fixed size so they sit nicely next to each other */
         .gallery-img {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            max-width: 200px;   
+            max-height: 200px;  
+            width: auto;        
+            height: auto;       
+            object-fit: contain; 
+            border-radius: 4px;
+            border: 1px solid #eee;
+            cursor: pointer; 
+            transition: transform 0.2s;
         }
 
         .gallery-img:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05); 
         }
 
-        /* Custom scrollbar styling */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+        /* --- WEBSITE PASSWORD POPUP OVERLAY BOX --- */
+        .pwd-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark transparent tint over page */
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(200, 200, 200, 0.4);
-            border-radius: 3px;
+
+        .pwd-modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 25px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
         }
-        
-        .markdown-body ul { list-style-type: disc; padding-left: 1.25rem; }
-        .markdown-body ol { list-style-type: decimal; padding-left: 1.25rem; }
-        .markdown-body p { margin-bottom: 0.5rem; }
-        .markdown-body code { background-color: #f3f4f6; padding: 0.1rem 0.3rem; border-radius: 0.25rem; font-size: 0.875em; }
-        .markdown-body blockquote { border-left: 3px solid #d1d5db; padding-left: 0.75rem; color: #4b5563; italic: true; }
+
+        .pwd-modal-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .pwd-input {
+            width: 80%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .pwd-submit-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .pwd-submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .close-pwd {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close-pwd:hover {
+            color: #333;
+        }
+
+        .error-msg {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* --- LIGHTBOX SLIDESHOW STYLING --- */
+        .lightbox {
+            display: none; 
+            position: fixed;
+            z-index: 999;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9); 
+        }
+
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 85%;
+            max-height: 75vh;
+            object-fit: contain;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -50px;
+            color: white;
+            font-weight: bold;
+            font-size: 40px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev {
+            left: 0;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- COMMENTS SECTION STYLING --- */
+        .comments-section {
+            margin-top: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased font-sans min-h-screen flex flex-col justify-between">
+<body>
 
-    <!-- MAIN CONTAINER -->
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+    <h1>Hello, World!</h1>
+    <p>have you seen this man.</p>
+    
+    <!-- Image 1: Your main visible image -->
+    <img src="avatar.png" alt="Wanted poster description" style="max-width: 100%; height: auto;">
+
+    <div>
+        <button class="secure-btn" onclick="openPasswordModal()">Click to see more images</button>
         
-        <!-- HEADER SECTION -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
-                Hello, World!
-            </h1>
-            <p class="text-base sm:text-lg text-gray-600 font-medium">
-                have you seen this man.
-            </p>
-        </header>
-
-        <!-- MAIN FEATURED IMAGE -->
-        <div class="flex justify-center mb-8">
-            <div class="relative group max-w-md w-full bg-white p-3 rounded-2xl shadow-sm border border-gray-200">
-                <img 
-                    src="avatar.png" 
-                    alt="Wanted poster description" 
-                    onerror="this.onerror=null; this.src='https://placehold.co/600x600/a0dce4/ffffff?text=Avatar+Image';"
-                    class="w-full h-auto rounded-xl object-cover shadow-inner"
-                >
-            </div>
-        </div>
-
-        <!-- ACTION CONTROLS & GALLERY WRAPPER -->
-        <div class="text-center">
-            <!-- Unlock Toggle Button -->
-            <button 
-                id="toggleBtn"
-                class="w-full sm:w-auto min-h-[48px] px-6 py-3 text-base font-semibold text-white rounded-xl shadow-md transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-4 focus:ring-sky-200"
-                style="background-color: #a0dce4;"
-                onclick="openPasswordModal()"
-            >
-                Click to see more images
-            </button>
-            
-            <!-- SECURE GALLERY CONTAINER (Responsive Grid Layout) -->
-            <div 
-                id="secureGallery" 
-                class="hidden mt-8 p-4 sm:p-6 bg-white border border-gray-200 rounded-2xl shadow-sm grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
-            >
-                <!-- Gallery Items 1-8 -->
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0134.PNG" 
-                        alt="first view" 
-                        data-index="0"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+1';"
-                    >
-                </div>
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0157.PNG" 
-                        alt="Second view" 
-                        data-index="1"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+2';"
-                    >
-                </div>
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0182.PNG" 
-                        alt="Third view" 
-                        data-index="2"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+3';"
-                    >
-                </div>
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0185.PNG" 
-                        alt="Fourth view" 
-                        data-index="3"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+4';"
-                    >
-                </div>
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0206.PNG" 
-                        alt="Fifth view" 
-                        data-index="4"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+5';"
-                    >
-                </div>
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0215.PNG" 
-                        alt="Sixth view" 
-                        data-index="5"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+6';"
-                    >
-                </div>
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0217.PNG" 
-                        alt="Seventh view" 
-                        data-index="6"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+7';"
-                    >
-                </div>
-                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
-                    <img 
-                        class="gallery-img w-full h-full object-cover cursor-pointer" 
-                        src="IMG_0218.PNG" 
-                        alt="Eighth view" 
-                        data-index="7"
-                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+8';"
-                    >
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- GITHUB COMMENTS SECTION                    -->
-        <!-- ========================================== -->
-        <section class="mt-16 border-t border-gray-200 pt-10">
-            <div class="max-w-4xl mx-auto">
-                <!-- Section Header & Integration Switcher -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-brands fa-github text-3xl text-gray-900"></i>
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                                Discussion & Feedback
-                                <span id="commentCountBadge" class="bg-gray-100 text-gray-700 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-gray-200">
-                                    3 comments
-                                </span>
-                            </h2>
-                            <p class="text-xs text-gray-500">Powered by GitHub Issues & Discussion API</p>
-                        </div>
-                    </div>
-
-                    <!-- Config / Connect Modal Trigger -->
-                    <button 
-                        onclick="openGithubConfigModal()"
-                        class="text-xs flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors border border-gray-200"
-                    >
-                        <i class="fa-solid fa-gear text-gray-500"></i>
-                        <span>Connect Repo (Giscus/Utterances)</span>
-                    </button>
-                </div>
-
-                <!-- GitHub Integration Setup Banner -->
-                <div class="bg-gradient-to-r from-slate-900 to-gray-800 text-white rounded-xl p-4 sm:p-5 mb-8 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div class="flex items-start gap-3">
-                        <div class="p-2 bg-white/10 rounded-lg shrink-0 mt-0.5 md:mt-0">
-                            <i class="fa-solid fa-code-branch text-sky-400 text-lg"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-sm sm:text-base">GitHub Discussions Active</h4>
-                            <p class="text-xs sm:text-sm text-gray-300">
-                                Leave comments using Markdown syntax. To connect this directly to your GitHub repository issues or Giscus backend, click settings.
-                            </p>
-                        </div>
-                    </div>
-                    <button 
-                        onclick="openGithubConfigModal()"
-                        class="shrink-0 text-xs bg-sky-500 hover:bg-sky-400 text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm"
-                    >
-                        View Setup Instructions
-                    </button>
-                </div>
-
-                <!-- NEW COMMENT COMPOSER CARD -->
-                <div class="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-sm mb-8">
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
-                        <!-- User identity indicator -->
-                        <div class="flex items-center gap-3">
-                            <img 
-                                id="userAvatar" 
-                                src="https://avatars.githubusercontent.com/u/583231?v=4" 
-                                alt="GitHub User Avatar" 
-                                class="w-8 h-8 rounded-full border border-gray-200"
-                            >
-                            <div>
-                                <span class="text-sm font-semibold text-gray-900 block leading-tight" id="activeUsername">Guest User</span>
-                                <span class="text-xs text-gray-500">Commenting via GitHub Markdown</span>
-                            </div>
-                        </div>
-
-                        <!-- Edit vs Preview Tabs -->
-                        <div class="flex bg-gray-100 p-1 rounded-lg text-xs font-medium">
-                            <button 
-                                id="tabWrite"
-                                onclick="switchCommentTab('write')" 
-                                class="px-3 py-1.5 rounded-md bg-white text-gray-900 shadow-xs font-semibold"
-                            >
-                                <i class="fa-solid fa-pen-to-square mr-1"></i> Write
-                            </button>
-                            <button 
-                                id="tabPreview"
-                                onclick="switchCommentTab('preview')" 
-                                class="px-3 py-1.5 rounded-md text-gray-600 hover:text-gray-900"
-                            >
-                                <i class="fa-solid fa-eye mr-1"></i> Preview
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- WRITE TAB CONTENT -->
-                    <div id="commentWriteArea">
-                        <textarea 
-                            id="commentInput"
-                            rows="4"
-                            class="w-full p-3 sm:p-4 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-400 focus:bg-white transition-all resize-y"
-                            placeholder="Leave a comment... (Markdown formatted code, bold, italic & lists supported)"
-                        ></textarea>
-                    </div>
-
-                    <!-- PREVIEW TAB CONTENT -->
-                    <div id="commentPreviewArea" class="hidden min-h-[110px] p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 markdown-body">
-                        <em class="text-gray-400">Nothing to preview...</em>
-                    </div>
-
-                    <!-- Action Bar -->
-                    <div class="mt-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-                        <div class="flex items-center gap-2 text-xs text-gray-500">
-                            <i class="fa-brands fa-markdown text-base text-gray-400"></i>
-                            <span>Styling with Markdown supported</span>
-                        </div>
-                        <button 
-                            onclick="postComment()"
-                            class="bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm py-2.5 px-5 rounded-xl transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2 min-h-[44px]"
-                        >
-                            <i class="fa-solid fa-paper-plane text-xs"></i>
-                            <span>Comment</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- COMMENTS FEED CONTAINER -->
-                <div id="commentsFeed" class="space-y-4">
-                    <!-- Comments injected dynamically via JavaScript -->
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="text-center py-6 text-sm text-gray-500 border-t border-gray-200 mt-12">
-        &copy; JAGM Gallery. All rights reserved.
-    </footer>
-
-    <!-- PASSWORD MODAL POPUP -->
-    <div 
-        id="pwdModal" 
-        class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-        onclick="handleModalBackdropClick(event)"
-    >
-        <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl relative transform transition-all">
-            <button 
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 text-2xl font-bold leading-none focus:outline-none" 
-                onclick="closePasswordModal()"
-                aria-label="Close Modal"
-            >
-                &times;
-            </button>
-            
-            <h3 class="text-xl font-bold text-gray-900 text-center mb-1">Enter Password</h3>
-            <p class="text-sm text-gray-500 text-center mb-5">This section is restricted.</p>
-            
-            <div class="mb-4">
-                <input 
-                    type="password" 
-                    id="passwordField" 
-                    class="w-full px-4 py-3 text-center border border-gray-300 rounded-xl text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
-                    placeholder="Password"
-                >
-                <div id="errorMsg" class="hidden text-red-500 text-xs text-center mt-2 font-semibold">
-                    Incorrect password. Try again!
-                </div>
-            </div>
-
-            <button 
-                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 min-h-[48px]" 
-                onclick="verifyPassword()"
-            >
-                Submit
-            </button>
+        <!-- The gallery hidden until unlocked -->
+        <div id="secureGallery" class="image-gallery" style="display: none;">
+            <img class="gallery-img" src="IMG_0134.PNG" alt="first view" data-index="0">
+            <img class="gallery-img" src="IMG_0157.PNG" alt="Second view" data-index="1">
+            <img class="gallery-img" src="IMG_0182.PNG" alt="Third view" data-index="2">
+            <img class="gallery-img" src="IMG_0185.PNG" alt="Fourth view" data-index="3">
+            <img class="gallery-img" src="IMG_0206.PNG" alt="Fifth view" data-index="4">
+            <img class="gallery-img" src="IMG_0215.PNG" alt="Sixth view" data-index="5">
+            <img class="gallery-img" src="IMG_0217.PNG" alt="Seventh view" data-index="6">
+            <img class="gallery-img" src="IMG_0218.PNG" alt="Eighth view" data-index="7">
         </div>
     </div>
 
-    <!-- FULLSCREEN RESPONSIVE LIGHTBOX MODAL -->
-    <div 
-        id="myLightbox" 
-        class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col justify-between p-4 sm:p-6 select-none"
-    >
-        <!-- Top Toolbar -->
-        <div class="flex justify-between items-center text-white z-10">
-            <span id="imageCounter" class="text-sm font-medium bg-white/10 px-3 py-1 rounded-full backdrop-blur-md">
-                1 / 8
-            </span>
-            <button 
-                class="text-white hover:text-gray-300 text-3xl sm:text-4xl font-bold p-2 leading-none focus:outline-none" 
-                onclick="closeLightbox()"
-                aria-label="Close Lightbox"
-            >
-                &times;
-            </button>
-        </div>
+    <!-- GitHub Comments Section (Giscus) -->
+    <div class="comments-section">
+        <h2>💬 Comments</h2>
+        <p style="color: #666; font-size: 14px;">Leave a comment below using GitHub. Your comments will automatically sync across all devices.</p>
+        
+        <!-- Giscus Container -->
+        <div class="giscus" style="margin-top: 20px;"></div>
+        
+        <!-- Single Giscus Script Tag -->
+        <script src="https://giscus.app/client.js"
+                data-repo="apachotia134-jpg/jesusangelguzmanmoreno"
+                data-repo-id="R_kgDOVYcK0A"
+                data-category="General"
+                data-category-id="DIC_kwDOVYcK0M4DJxfB"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="preferred_color_scheme"
+                data-lang="en"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </div>
 
-        <!-- Main Lightbox Image Viewport -->
-        <div 
-            id="lightboxViewport"
-            class="flex-1 flex items-center justify-center relative my-4 overflow-hidden"
-        >
-            <img 
-                class="max-w-full max-h-[75vh] sm:max-h-[80vh] object-contain rounded-lg shadow-2xl transition-transform duration-200" 
-                id="lightboxImg" 
-                alt="Enlarged view"
-            >
-
-            <!-- Navigation Buttons -->
-            <button 
-                class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-3 sm:p-4 rounded-full backdrop-blur-md transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center focus:outline-none" 
-                onclick="changeSlide(-1)"
-                aria-label="Previous Image"
-            >
-                &#10094;
-            </button>
-            <button 
-                class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-3 sm:p-4 rounded-full backdrop-blur-md transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center focus:outline-none" 
-                onclick="changeSlide(1)"
-                aria-label="Next Image"
-            >
-                &#10095;
-            </button>
-        </div>
-
-        <!-- Mobile Controls -->
-        <div class="flex justify-center gap-4 text-white pb-2 z-10 sm:hidden">
-            <button 
-                class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-xl text-sm font-medium backdrop-blur-md active:scale-95" 
-                onclick="changeSlide(-1)"
-            >
-                Previous
-            </button>
-            <button 
-                class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-xl text-sm font-medium backdrop-blur-md active:scale-95" 
-                onclick="changeSlide(1)"
-            >
-                Next
-            </button>
+    <!-- THIS IS THE POPUP PASSWORD BOX -->
+    <div id="pwdModal" class="pwd-modal">
+        <div class="pwd-modal-content">
+            <span class="close-pwd" onclick="closePasswordModal()">&times;</span>
+            <h3>Enter Password</h3>
+            <p style="color: #666; font-size: 14px; margin: 0;">This section is restricted.</p>
+            <input type="password" id="passwordField" class="pwd-input" placeholder="Password">
+            <br>
+            <button class="pwd-submit-btn" onclick="verifyPassword()">Submit</button>
+            <div id="errorMsg" class="error-msg">Incorrect password. Try again!</div>
         </div>
     </div>
 
-    <!-- GITHUB CONFIGURATION & INSTRUCTIONS MODAL -->
-    <div 
-        id="githubModal" 
-        class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
-        onclick="if(event.target === this) closeGithubConfigModal()"
-    >
-        <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative my-8">
-            <button 
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 text-2xl font-bold leading-none focus:outline-none" 
-                onclick="closeGithubConfigModal()"
-            >
-                &times;
-            </button>
-
-            <div class="flex items-center gap-3 mb-4">
-                <i class="fa-brands fa-github text-3xl text-gray-900"></i>
-                <div>
-                    <h3 class="text-xl font-bold text-gray-900">Connect GitHub Repository</h3>
-                    <p class="text-xs text-gray-500">Embed live Giscus or Utterances comments</p>
-                </div>
-            </div>
-
-            <div class="space-y-4 text-sm text-gray-600 mb-6">
-                <p>
-                    To link live GitHub issues/discussions to your site so comments persist directly on GitHub, follow these 2 steps:
-                </p>
-                
-                <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 space-y-2 text-xs">
-                    <p class="font-semibold text-gray-800">Option 1: Using Giscus (Recommended)</p>
-                    <ol class="list-decimal pl-4 space-y-1 text-gray-600">
-                        <li>Enable <strong>Discussions</strong> in your public GitHub Repository settings.</li>
-                        <li>Install the <a href="https://github.com/apps/giscus" target="_blank" class="text-sky-600 underline">Giscus GitHub App</a> on your repository.</li>
-                        <li>Copy the generated script tag from <a href="https://giscus.app" target="_blank" class="text-sky-600 underline">giscus.app</a>.</li>
-                    </ol>
-                </div>
-
-                <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 text-xs">
-                    <p class="font-semibold text-gray-800 mb-1">Generated Script Snippet Example:</p>
-                    <pre class="bg-gray-900 text-sky-300 p-2.5 rounded-lg overflow-x-auto text-[11px] font-mono leading-relaxed">&lt;script src="https://giscus.app/client.js"
-        data-repo="[your-username]/[your-repo]"
-        data-repo-id="R_kgDO..."
-        data-category="Announcements"
-        data-mapping="pathname"
-        data-theme="light"
-        crossorigin="anonymous"
-        async&gt;
-&lt;/script&gt;</pre>
-                </div>
-            </div>
-
-            <button 
-                onclick="closeGithubConfigModal()" 
-                class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-xl transition-colors"
-            >
-                Got it, close instructions
-            </button>
-        </div>
+    <!-- The Pop-up Lightbox Structure -->
+    <div id="myLightbox" class="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <img class="lightbox-content" id="lightboxImg">
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
     </div>
 
-    <!-- APPLICATION LOGIC -->
     <script>
-        // DOM ELEMENTS
         const pwdModal = document.getElementById('pwdModal');
         const passwordField = document.getElementById('passwordField');
         const errorMsg = document.getElementById('errorMsg');
         const gallery = document.getElementById('secureGallery');
-        const toggleBtn = document.getElementById('toggleBtn');
-        const lightbox = document.getElementById('myLightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const imageCounter = document.getElementById('imageCounter');
-        const lightboxViewport = document.getElementById('lightboxViewport');
-        const images = document.querySelectorAll('.gallery-img');
 
-        let currentIdx = 0;
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        // PASSWORD MODAL LOGIC
+        // CUSTOM PASSWORD LOGIC
         function openPasswordModal() {
-            if (!gallery.classList.contains('hidden')) {
-                gallery.classList.add('hidden');
-                toggleBtn.textContent = "Click to see more images";
+            if (gallery.style.display === "flex") {
+                gallery.style.display = "none";
                 return;
             }
-            pwdModal.classList.remove('hidden');
+            pwdModal.style.display = "block";
             passwordField.value = ""; 
-            errorMsg.classList.add('hidden'); 
+            errorMsg.style.display = "none"; 
             passwordField.focus();
         }
 
         function closePasswordModal() {
-            pwdModal.classList.add('hidden');
-        }
-
-        function handleModalBackdropClick(e) {
-            if (e.target === pwdModal) {
-                closePasswordModal();
-            }
+            pwdModal.style.display = "none";
         }
 
         function verifyPassword() {
             if (passwordField.value === "JAGM") {
-                gallery.classList.remove('hidden'); 
+                gallery.style.display = "flex"; 
                 closePasswordModal();
-                toggleBtn.textContent = "Hide gallery images";
             } else {
-                errorMsg.classList.remove('hidden'); 
+                errorMsg.style.display = "block"; 
             }
         }
 
@@ -509,6 +309,11 @@
         });
 
         // LIGHTBOX SLIDESHOW LOGIC
+        let currentIdx = 0;
+        const images = document.querySelectorAll('.gallery-img');
+        const lightbox = document.getElementById('myLightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+
         images.forEach((img) => {
             img.addEventListener('click', function() {
                 openLightbox(parseInt(this.getAttribute('data-index')));
@@ -517,14 +322,12 @@
 
         function openLightbox(index) {
             currentIdx = index;
-            lightbox.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; 
+            lightbox.style.display = "block";
             updateLightboxImage();
         }
 
         function closeLightbox() {
-            lightbox.classList.add('hidden');
-            document.body.style.overflow = ''; 
+            lightbox.style.display = "none";
         }
 
         function changeSlide(direction) {
@@ -536,231 +339,22 @@
 
         function updateLightboxImage() {
             lightboxImg.src = images[currentIdx].src;
-            imageCounter.textContent = `${currentIdx + 1} / ${images.length}`;
         }
 
         lightbox.addEventListener('click', function(e) {
-            if (e.target === lightbox || e.target === lightboxViewport) {
+            if (e.target === lightbox) {
                 closeLightbox();
             }
         });
 
         document.addEventListener('keydown', function(e) {
-            if (!lightbox.classList.contains('hidden')) {
+            if (lightbox.style.display === "block") {
                 if (e.key === "ArrowLeft") changeSlide(-1);
                 if (e.key === "ArrowRight") changeSlide(1);
                 if (e.key === "Escape") closeLightbox();
             }
         });
-
-        // LIGHTBOX TOUCH / SWIPE GESTURES
-        lightboxViewport.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-
-        lightboxViewport.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, { passive: true });
-
-        function handleSwipe() {
-            const swipeThreshold = 40;
-            if (touchEndX < touchStartX - swipeThreshold) {
-                changeSlide(1);
-            }
-            if (touchEndX > touchStartX + swipeThreshold) {
-                changeSlide(-1);
-            }
-        }
-
-        // ==========================================
-        // GITHUB COMMENTS SYSTEM DATA & CONTROLLER
-        // ==========================================
-        const initialComments = [
-            {
-                id: 101,
-                author: "octocat",
-                avatar: "https://avatars.githubusercontent.com/u/583231?v=4",
-                badge: "Owner",
-                timestamp: "2 hours ago",
-                content: "Welcome to the **JAGM Gallery** feedback thread! Feel free to post photos, comments, or suggestions. Markdown is fully supported: `code blocks`, **bold text**, and lists work!",
-                reactions: { "❤️": 4, "👍": 7, "🚀": 2 }
-            },
-            {
-                id: 102,
-                author: "dev-explorer",
-                avatar: "https://avatars.githubusercontent.com/u/9919?v=4",
-                badge: "Contributor",
-                timestamp: "1 hour ago",
-                content: "Awesome responsive layout! The lightbox navigation feels super smooth on mobile devices.",
-                reactions: { "👍": 3, "🎉": 2 }
-            },
-            {
-                id: 103,
-                author: "creative-coder",
-                avatar: "https://avatars.githubusercontent.com/u/1024025?v=4",
-                badge: "Member",
-                timestamp: "25 minutes ago",
-                content: "Is there any plan to add auto-slideshow playback in the future? That would be an awesome touch!",
-                reactions: { "🚀": 1 }
-            }
-        ];
-
-        let commentsData = [...initialComments];
-
-        function renderComments() {
-            const feed = document.getElementById('commentsFeed');
-            const badge = document.getElementById('commentCountBadge');
-            badge.textContent = `${commentsData.length} comment${commentsData.length !== 1 ? 's' : ''}`;
-
-            if (commentsData.length === 0) {
-                feed.innerHTML = `
-                    <div class="text-center py-10 bg-white border border-gray-200 rounded-2xl text-gray-500 text-sm">
-                        No comments yet. Be the first to start the discussion!
-                    </div>
-                `;
-                return;
-            }
-
-            feed.innerHTML = commentsData.map(c => `
-                <div class="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-xs transition-all hover:border-gray-300">
-                    <!-- Comment Header -->
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2.5">
-                            <img src="${c.avatar}" alt="${c.author}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-bold text-gray-900">${c.author}</span>
-                                ${c.badge ? `<span class="bg-sky-50 text-sky-700 border border-sky-200 text-[10px] font-semibold px-2 py-0.5 rounded-full">${c.badge}</span>` : ''}
-                                <span class="text-xs text-gray-400">• ${c.timestamp}</span>
-                            </div>
-                        </div>
-
-                        <!-- Menu/Reply -->
-                        <button 
-                            onclick="replyToComment('${c.author}')"
-                            class="text-xs text-gray-500 hover:text-sky-600 font-medium flex items-center gap-1 transition-colors"
-                        >
-                            <i class="fa-solid fa-reply"></i> Reply
-                        </button>
-                    </div>
-
-                    <!-- Comment Content (Rendered Markdown) -->
-                    <div class="text-sm text-gray-800 markdown-body pl-0 sm:pl-10 mb-3">
-                        ${typeof marked !== 'undefined' ? marked.parse(c.content) : c.content}
-                    </div>
-
-                    <!-- Reactions Footer -->
-                    <div class="pl-0 sm:pl-10 flex flex-wrap items-center gap-1.5 pt-2 border-t border-gray-100">
-                        ${Object.entries(c.reactions || {}).map(([emoji, count]) => `
-                            <button 
-                                onclick="toggleReaction(${c.id}, '${emoji}')"
-                                class="inline-flex items-center gap-1 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-lg transition-colors active:scale-95"
-                            >
-                                <span>${emoji}</span>
-                                <span class="font-medium text-gray-600">${count}</span>
-                            </button>
-                        `).join('')}
-                        
-                        <!-- Add reaction dropdown toggle -->
-                        <div class="relative group inline-block">
-                            <button class="text-xs text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                                <i class="fa-regular fa-face-smile"></i>
-                            </button>
-                            <div class="hidden group-hover:flex absolute left-0 bottom-full mb-1 bg-white border border-gray-200 shadow-md rounded-xl p-1 gap-1 z-20">
-                                ${["❤️", "👍", "🚀", "🎉"].map(e => `
-                                    <button onclick="toggleReaction(${c.id}, '${e}')" class="p-1.5 hover:bg-gray-100 rounded-md text-sm">${e}</button>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // COMMENT COMPOSER FUNCTIONS
-        function switchCommentTab(tab) {
-            const writeArea = document.getElementById('commentWriteArea');
-            const previewArea = document.getElementById('commentPreviewArea');
-            const tabWrite = document.getElementById('tabWrite');
-            const tabPreview = document.getElementById('tabPreview');
-            const text = document.getElementById('commentInput').value;
-
-            if (tab === 'write') {
-                writeArea.classList.remove('hidden');
-                previewArea.classList.add('hidden');
-                tabWrite.className = "px-3 py-1.5 rounded-md bg-white text-gray-900 shadow-xs font-semibold";
-                tabPreview.className = "px-3 py-1.5 rounded-md text-gray-600 hover:text-gray-900";
-            } else {
-                writeArea.classList.add('hidden');
-                previewArea.classList.remove('hidden');
-                tabPreview.className = "px-3 py-1.5 rounded-md bg-white text-gray-900 shadow-xs font-semibold";
-                tabWrite.className = "px-3 py-1.5 rounded-md text-gray-600 hover:text-gray-900";
-                
-                if (text.trim() === "") {
-                    previewArea.innerHTML = '<em class="text-gray-400">Nothing to preview...</em>';
-                } else {
-                    previewArea.innerHTML = typeof marked !== 'undefined' ? marked.parse(text) : text;
-                }
-            }
-        }
-
-        function postComment() {
-            const input = document.getElementById('commentInput');
-            const content = input.value.trim();
-
-            if (!content) {
-                input.focus();
-                return;
-            }
-
-            const newComment = {
-                id: Date.now(),
-                author: "Guest User",
-                avatar: "https://avatars.githubusercontent.com/u/583231?v=4",
-                badge: "Guest",
-                timestamp: "Just now",
-                content: content,
-                reactions: { "❤️": 1 }
-            };
-
-            commentsData.unshift(newComment);
-            input.value = "";
-            switchCommentTab('write');
-            renderComments();
-        }
-
-        function replyToComment(author) {
-            const input = document.getElementById('commentInput');
-            input.value = `@${author} ` + input.value;
-            input.focus();
-            window.scrollTo({
-                top: input.getBoundingClientRect().top + window.pageYOffset - 120,
-                behavior: 'smooth'
-            });
-        }
-
-        function toggleReaction(commentId, emoji) {
-            const target = commentsData.find(c => c.id === commentId);
-            if (target) {
-                if (!target.reactions) target.reactions = {};
-                target.reactions[emoji] = (target.reactions[emoji] || 0) + 1;
-                renderComments();
-            }
-        }
-
-        // GITHUB CONFIG MODAL CONTROLLERS
-        function openGithubConfigModal() {
-            document.getElementById('githubModal').classList.remove('hidden');
-        }
-
-        function closeGithubConfigModal() {
-            document.getElementById('githubModal').classList.add('hidden');
-        }
-
-        // INITIALIZE ON LOAD
-        window.addEventListener('DOMContentLoaded', () => {
-            renderComments();
-        });
     </script>
+
 </body>
 </html>
