@@ -1,269 +1,322 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JAGM Gallery</title>
+    <!-- Tailwind CSS CDN for smooth responsive utility styling and layout handling -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        /* This styles the main button layout */
-        .secure-btn {
-            background-color: ##a0dce4;
-            color: white;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 20px;
-            user-select: none;
-        }
-
-        .secure-btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Turns the gallery container into a side-by-side flex layout */
-        .image-gallery {
-            margin-top: 15px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            display: flex;
-            flex-wrap: wrap; 
-            gap: 15px;       
-            justify-content: center; 
-        }
-
-        /* Fixed size so they sit nicely next to each other */
+        /* Smooth transitions for interactive elements */
         .gallery-img {
-            max-width: 200px;   
-            max-height: 200px;  
-            width: auto;        
-            height: auto;       
-            object-fit: contain; 
-            border-radius: 4px;
-            border: 1px solid #eee;
-            cursor: pointer; 
-            transition: transform 0.2s;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
         .gallery-img:hover {
-            transform: scale(1.05); 
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
         }
 
-        /* --- WEBSITE PASSWORD POPUP OVERLAY BOX --- */
-        .pwd-modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* Dark transparent tint over page */
+        /* Modal Backdrop Blur Animation */
+        .modal-fade {
+            transition: opacity 0.3s ease;
         }
 
-        .pwd-modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 25px;
-            border-radius: 10px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            position: relative;
+        /* Custom scrollbar styling for lightbox modal */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
-
-        .pwd-modal-content h3 {
-            margin-top: 0;
-            color: #333;
-        }
-
-        .pwd-input {
-            width: 80%;
-            padding: 10px;
-            margin: 15px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        .pwd-submit-btn {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .pwd-submit-btn:hover {
-            background-color: #218838;
-        }
-
-        .close-pwd {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        .close-pwd:hover {
-            color: #333;
-        }
-
-        .error-msg {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        /* --- LIGHTBOX SLIDESHOW STYLING --- */
-        .lightbox {
-            display: none; 
-            position: fixed;
-            z-index: 999;
-            padding-top: 50px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9); 
-        }
-
-        .lightbox-content {
-            margin: auto;
-            display: block;
-            max-width: 85%;
-            max-height: 75vh;
-            object-fit: contain;
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .prev, .next {
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            width: auto;
-            padding: 16px;
-            margin-top: -50px;
-            color: white;
-            font-weight: bold;
-            font-size: 40px;
-            transition: 0.6s ease;
-            border-radius: 0 3px 3px 0;
-            user-select: none;
-        }
-
-        .next {
-            right: 0;
-            border-radius: 3px 0 0 3px;
-        }
-
-        .prev {
-            left: 0;
-        }
-
-        .prev:hover, .next:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800 antialiased font-sans min-h-screen flex flex-col justify-between">
 
-    <h1>Hello, World!</h1>
-    <p>have you seen this man.</p>
-    
-    <!-- Image 1: Your main visible image -->
-    <img src="avatar.png" alt="Wanted poster description" style="max-width: 100%; height: auto;">
-
-    <div>
-        <button class="secure-btn" onclick="openPasswordModal()">Click to see more images</button>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
         
-        <!-- The gallery hidden until unlocked -->
-        <div id="secureGallery" class="image-gallery" style="display: none;">
-            <img class="gallery-img" src="IMG_0134.PNG" alt="first view" data-index="0">
-            <img class="gallery-img" src="IMG_0157.PNG" alt="Second view" data-index="1">
-            <img class="gallery-img" src="IMG_0182.PNG" alt="Third view" data-index="2">
-            <img class="gallery-img" src="IMG_0185.PNG" alt="Fourth view" data-index="3">
-            <img class="gallery-img" src="IMG_0206.PNG" alt="Fifth view" data-index="4">
-            <img class="gallery-img" src="IMG_0215.PNG" alt="Sixth view" data-index="5">
-            <img class="gallery-img" src="IMG_0217.PNG" alt="Seventh view" data-index="6">
-            <img class="gallery-img" src="IMG_0218.PNG" alt="Eighth view" data-index="7">
+        <!-- HEADER SECTION -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
+                Hello, World!
+            </h1>
+            <p class="text-base sm:text-lg text-gray-600 font-medium">
+                have you seen this man.
+            </p>
+        </header>
+
+        <!-- MAIN FEATURED IMAGE -->
+        <div class="flex justify-center mb-8">
+            <div class="relative group max-w-md w-full bg-white p-3 rounded-2xl shadow-sm border border-gray-200">
+                <img 
+                    src="avatar.png" 
+                    alt="Wanted poster description" 
+                    onerror="this.onerror=null; this.src='https://placehold.co/600x600/a0dce4/ffffff?text=Avatar+Image';"
+                    class="w-full h-auto rounded-xl object-cover shadow-inner"
+                >
+            </div>
+        </div>
+
+        <!-- ACTION CONTROLS & GALLERY WRAPPER -->
+        <div class="text-center">
+            <!-- Fixed double hash bug (##a0dce4 -> #a0dce4) using inline styling & Tailwind hover states -->
+            <button 
+                id="toggleBtn"
+                class="w-full sm:w-auto min-h-[48px] px-6 py-3 text-base font-semibold text-white rounded-xl shadow-md transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-4 focus:ring-sky-200"
+                style="background-color: #a0dce4;"
+                onclick="openPasswordModal()"
+            >
+                Click to see more images
+            </button>
+            
+            <!-- SECURE GALLERY CONTAINER (Responsive Grid Layout) -->
+            <div 
+                id="secureGallery" 
+                class="hidden mt-8 p-4 sm:p-6 bg-white border border-gray-200 rounded-2xl shadow-sm grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+            >
+                <!-- Gallery Item 1 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0134.PNG" 
+                        alt="first view" 
+                        data-index="0"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+1';"
+                    >
+                </div>
+                <!-- Gallery Item 2 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0157.PNG" 
+                        alt="Second view" 
+                        data-index="1"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+2';"
+                    >
+                </div>
+                <!-- Gallery Item 3 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0182.PNG" 
+                        alt="Third view" 
+                        data-index="2"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+3';"
+                    >
+                </div>
+                <!-- Gallery Item 4 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0185.PNG" 
+                        alt="Fourth view" 
+                        data-index="3"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+4';"
+                    >
+                </div>
+                <!-- Gallery Item 5 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0206.PNG" 
+                        alt="Fifth view" 
+                        data-index="4"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+5';"
+                    >
+                </div>
+                <!-- Gallery Item 6 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0215.PNG" 
+                        alt="Sixth view" 
+                        data-index="5"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+6';"
+                    >
+                </div>
+                <!-- Gallery Item 7 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0217.PNG" 
+                        alt="Seventh view" 
+                        data-index="6"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+7';"
+                    >
+                </div>
+                <!-- Gallery Item 8 -->
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <img 
+                        class="gallery-img w-full h-full object-cover cursor-pointer" 
+                        src="IMG_0218.PNG" 
+                        alt="Eighth view" 
+                        data-index="7"
+                        onerror="this.onerror=null; this.src='https://placehold.co/400x400/333/fff?text=View+8';"
+                    >
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-6 text-sm text-gray-500">
+        &copy; JAGM Gallery. All rights reserved.
+    </footer>
+
+    <!-- PASSWORD MODAL POPUP -->
+    <div 
+        id="pwdModal" 
+        class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+        onclick="handleModalBackdropClick(event)"
+    >
+        <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl relative transform transition-all">
+            <!-- Close Button -->
+            <button 
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 text-2xl font-bold leading-none focus:outline-none" 
+                onclick="closePasswordModal()"
+                aria-label="Close Modal"
+            >
+                &times;
+            </button>
+            
+            <h3 class="text-xl font-bold text-gray-900 text-center mb-1">Enter Password</h3>
+            <p class="text-sm text-gray-500 text-center mb-5">This section is restricted.</p>
+            
+            <div class="mb-4">
+                <input 
+                    type="password" 
+                    id="passwordField" 
+                    class="w-full px-4 py-3 text-center border border-gray-300 rounded-xl text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
+                    placeholder="Password"
+                >
+                <div id="errorMsg" class="hidden text-red-500 text-xs text-center mt-2 font-semibold">
+                    Incorrect password. Try again!
+                </div>
+            </div>
+
+            <button 
+                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 min-h-[48px]" 
+                onclick="verifyPassword()"
+            >
+                Submit
+            </button>
         </div>
     </div>
 
-    <!-- THIS IS THE POPUP PASSWORD BOX -->
-    <div id="pwdModal" class="pwd-modal">
-        <div class="pwd-modal-content">
-            <span class="close-pwd" onclick="closePasswordModal()">&times;</span>
-            <h3>Enter Password</h3>
-            <p style="color: #666; font-size: 14px; margin: 0;">This section is restricted.</p>
-            <input type="password" id="passwordField" class="pwd-input" placeholder="Password">
-            <br>
-            <button class="pwd-submit-btn" onclick="verifyPassword()">Submit</button>
-            <div id="errorMsg" class="error-msg">Incorrect password. Try again!</div>
+    <!-- FULLSCREEN RESPONSIVE LIGHTBOX MODAL -->
+    <div 
+        id="myLightbox" 
+        class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col justify-between p-4 sm:p-6 select-none"
+    >
+        <!-- Top Toolbar -->
+        <div class="flex justify-between items-center text-white z-10">
+            <span id="imageCounter" class="text-sm font-medium bg-white/10 px-3 py-1 rounded-full backdrop-blur-md">
+                1 / 8
+            </span>
+            <button 
+                class="text-white hover:text-gray-300 text-3xl sm:text-4xl font-bold p-2 leading-none focus:outline-none" 
+                onclick="closeLightbox()"
+                aria-label="Close Lightbox"
+            >
+                &times;
+            </button>
+        </div>
+
+        <!-- Main Lightbox Image Viewport with Touch Gesture Support -->
+        <div 
+            id="lightboxViewport"
+            class="flex-1 flex items-center justify-center relative my-4 overflow-hidden"
+        >
+            <img 
+                class="max-w-full max-h-[75vh] sm:max-h-[80vh] object-contain rounded-lg shadow-2xl transition-transform duration-200" 
+                id="lightboxImg" 
+                alt="Enlarged view"
+            >
+
+            <!-- Touch / Mobile Navigation Overlays (Swipe hints or side taps) -->
+            <button 
+                class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-3 sm:p-4 rounded-full backdrop-blur-md transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center focus:outline-none" 
+                onclick="changeSlide(-1)"
+                aria-label="Previous Image"
+            >
+                &#10094;
+            </button>
+            <button 
+                class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-3 sm:p-4 rounded-full backdrop-blur-md transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center focus:outline-none" 
+                onclick="changeSlide(1)"
+                aria-label="Next Image"
+            >
+                &#10095;
+            </button>
+        </div>
+
+        <!-- Bottom Controls for Mobile Friendly Interaction -->
+        <div class="flex justify-center gap-4 text-white pb-2 z-10 sm:hidden">
+            <button 
+                class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-xl text-sm font-medium backdrop-blur-md active:scale-95" 
+                onclick="changeSlide(-1)"
+            >
+                Previous
+            </button>
+            <button 
+                class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-xl text-sm font-medium backdrop-blur-md active:scale-95" 
+                onclick="changeSlide(1)"
+            >
+                Next
+            </button>
         </div>
     </div>
 
-    <!-- The Pop-up Lightbox Structure -->
-    <div id="myLightbox" class="lightbox">
-        <span class="close" onclick="closeLightbox()">&times;</span>
-        <img class="lightbox-content" id="lightboxImg">
-        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
-        <a class="next" onclick="changeSlide(1)">&#10095;</a>
-    </div>
-
+    <!-- APPLICATION LOGIC -->
     <script>
+        // DOM Elements
         const pwdModal = document.getElementById('pwdModal');
         const passwordField = document.getElementById('passwordField');
         const errorMsg = document.getElementById('errorMsg');
         const gallery = document.getElementById('secureGallery');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const lightbox = document.getElementById('myLightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const imageCounter = document.getElementById('imageCounter');
+        const lightboxViewport = document.getElementById('lightboxViewport');
+        const images = document.querySelectorAll('.gallery-img');
 
-        // CUSTOM PASSWORD LOGIC
+        let currentIdx = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // PASSWORD MODAL LOGIC
         function openPasswordModal() {
-            if (gallery.style.display === "flex") {
-                gallery.style.display = "none";
+            if (!gallery.classList.contains('hidden')) {
+                gallery.classList.add('hidden');
+                toggleBtn.textContent = "Click to see more images";
                 return;
             }
-            pwdModal.style.display = "block";
+            pwdModal.classList.remove('hidden');
             passwordField.value = ""; 
-            errorMsg.style.display = "none"; 
+            errorMsg.classList.add('hidden'); 
             passwordField.focus();
         }
 
         function closePasswordModal() {
-            pwdModal.style.display = "none";
+            pwdModal.classList.add('hidden');
+        }
+
+        function handleModalBackdropClick(e) {
+            if (e.target === pwdModal) {
+                closePasswordModal();
+            }
         }
 
         function verifyPassword() {
             if (passwordField.value === "JAGM") {
-                gallery.style.display = "flex"; 
+                gallery.classList.remove('hidden'); 
                 closePasswordModal();
+                toggleBtn.textContent = "Hide gallery images";
             } else {
-                errorMsg.style.display = "block"; 
+                errorMsg.classList.remove('hidden'); 
             }
         }
 
@@ -274,11 +327,6 @@
         });
 
         // LIGHTBOX SLIDESHOW LOGIC
-        let currentIdx = 0;
-        const images = document.querySelectorAll('.gallery-img');
-        const lightbox = document.getElementById('myLightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-
         images.forEach((img) => {
             img.addEventListener('click', function() {
                 openLightbox(parseInt(this.getAttribute('data-index')));
@@ -287,12 +335,14 @@
 
         function openLightbox(index) {
             currentIdx = index;
-            lightbox.style.display = "block";
+            lightbox.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent page background scrolling
             updateLightboxImage();
         }
 
         function closeLightbox() {
-            lightbox.style.display = "none";
+            lightbox.classList.add('hidden');
+            document.body.style.overflow = ''; // Restore background scrolling
         }
 
         function changeSlide(direction) {
@@ -304,22 +354,44 @@
 
         function updateLightboxImage() {
             lightboxImg.src = images[currentIdx].src;
+            imageCounter.textContent = `${currentIdx + 1} / ${images.length}`;
         }
 
+        // CLOSE ON BACKDROP CLICK
         lightbox.addEventListener('click', function(e) {
-            if (e.target === lightbox) {
+            if (e.target === lightbox || e.target === lightboxViewport) {
                 closeLightbox();
             }
         });
 
+        // KEYBOARD NAVIGATION
         document.addEventListener('keydown', function(e) {
-            if (lightbox.style.display === "block") {
+            if (!lightbox.classList.contains('hidden')) {
                 if (e.key === "ArrowLeft") changeSlide(-1);
                 if (e.key === "ArrowRight") changeSlide(1);
                 if (e.key === "Escape") closeLightbox();
             }
         });
-    </script>
 
+        // TOUCH & SWIPE GESTURE SUPPORT FOR MOBILE LIGHTBOX
+        lightboxViewport.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        lightboxViewport.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 40; // minimum swipe distance in pixels
+            if (touchEndX < touchStartX - swipeThreshold) {
+                changeSlide(1); // Swipe left -> Next Image
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                changeSlide(-1); // Swipe right -> Previous Image
+            }
+        }
+    </script>
 </body>
 </html>
