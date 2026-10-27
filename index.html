@@ -6,12 +6,18 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #1a1a1a; /* Dark grey background */
+            color: #f1f1f1; /* Light text for readability */
+        }
+
+        h1, p {
+            color: #f1f1f1;
         }
 
         /* This styles the main button layout */
         .secure-btn {
             background-color: #a0dce4;
-            color: white;
+            color: #333;
             padding: 12px 20px;
             font-size: 16px;
             font-weight: bold;
@@ -24,16 +30,17 @@
         }
 
         .secure-btn:hover {
-            background-color: #0056b3;
+            background-color: #3182ce;
+            color: white;
         }
 
         /* Turns the gallery container into a side-by-side flex layout */
         .image-gallery {
             margin-top: 15px;
             padding: 15px;
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: #2a2a2a; /* Slightly lighter dark grey container */
             display: flex;
             flex-wrap: wrap; 
             gap: 15px;       
@@ -48,7 +55,7 @@
             height: auto;       
             object-fit: contain; 
             border-radius: 4px;
-            border: 1px solid #eee;
+            border: 1px solid #444;
             cursor: pointer; 
             transition: transform 0.2s;
         }
@@ -66,30 +73,33 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* Dark transparent tint over page */
+            background-color: rgba(0, 0, 0, 0.8); /* Dark transparent tint over page */
         }
 
         .pwd-modal-content {
-            background-color: #fff;
+            background-color: #2a2a2a;
             margin: 15% auto;
             padding: 25px;
             border-radius: 10px;
             width: 300px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             position: relative;
+            color: #f1f1f1;
         }
 
         .pwd-modal-content h3 {
             margin-top: 0;
-            color: #333;
+            color: #f1f1f1;
         }
 
         .pwd-input {
             width: 80%;
             padding: 10px;
             margin: 15px 0;
-            border: 1px solid #ccc;
+            border: 1px solid #555;
+            background-color: #1a1a1a;
+            color: #f1f1f1;
             border-radius: 5px;
             font-size: 16px;
             text-align: center;
@@ -120,7 +130,7 @@
         }
 
         .close-pwd:hover {
-            color: #333;
+            color: #fff;
         }
 
         .error-msg {
@@ -141,7 +151,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9); 
+            background-color: rgba(0, 0, 0, 0.95); 
         }
 
         .lightbox-content {
@@ -187,16 +197,16 @@
         }
 
         .prev:hover, .next:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         /* --- COMMENTS SECTION STYLING --- */
         .comments-section {
             margin-top: 40px;
             padding: 20px;
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: #2a2a2a;
         }
     </style>
 </head>
@@ -227,7 +237,7 @@
     <!-- GitHub Comments Section (Giscus) -->
     <div class="comments-section">
         <h2>💬 Comments</h2>
-        <p style="color: #666; font-size: 14px;">Leave a comment below using GitHub. Your comments will automatically sync across all devices.</p>
+        <p style="color: #aaa; font-size: 14px;">Leave a comment below using GitHub. Your comments will automatically sync across all devices.</p>
         
         <!-- Giscus Container -->
         <div class="giscus" style="margin-top: 20px;"></div>
@@ -255,7 +265,7 @@
         <div class="pwd-modal-content">
             <span class="close-pwd" onclick="closePasswordModal()">&times;</span>
             <h3>Enter Password</h3>
-            <p style="color: #666; font-size: 14px; margin: 0;">This section is restricted.</p>
+            <p style="color: #aaa; font-size: 14px; margin: 0;">This section is restricted.</p>
             <input type="password" id="passwordField" class="pwd-input" placeholder="Password">
             <br>
             <button class="pwd-submit-btn" onclick="verifyPassword()">Submit</button>
